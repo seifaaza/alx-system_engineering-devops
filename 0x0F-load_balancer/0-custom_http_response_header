@@ -1,25 +1,30 @@
 #!/usr/bin/env bash
-# Script configures Nginx so that its HTTP response contains a custom header
+# Install Nginx with server 0x01 config
+#+ add HTTP header named X-Served-By $HOSTNAME
 
-# Update package lists and install Nginx
-apt-get -y update
+apt-get update
 apt-get install -y nginx
 
-# Allow Nginx HTTP traffic through firewall
-sudo ufw allow "Nginx HTTP"
+mkdir -p /var/www/html
+touch /var/www/html/index.html
+echo "Holberton School" > /var/www/html/index.html
+touch /var/www/html/404.html
+echo "Ceci n'est pas une page" > /var/www/html/404.html
 
-# Create Default HTML Files
-echo "Hello World!" > /var/www/html/index.nginx-debian.html
-echo "Ceci n'est pas une page" > /var/www/html/custom_404.html
+printf %s "server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    add_header X-Served-By $HOSTNAME;
+    root   /var/www/html;
+    index  index.html index.htm;
+    location /redirect_me {
+        return 301 https://www.youtube.com/watch?v=xJJsoquu70o/;
+    }
+    error_page 404 /404.html;
+    location /404 {
+      root /var/www/html;
+      internal;
+    }
+}" > /etc/nginx/sites-enabled/default
 
-# Configure URL Redirection
-sed -i "/server_name _;/ a rewrite ^/redirect_me https://www.youtube.com/watch?v=QH2-TGUlwu4 permanent;" /etc/nginx/sites-available/default
-
-# Configure Custom 404 Page
-sed -i "/server_name _;/ a error_page 404 /custom_404.html;" /etc/nginx/sites-available/default
-
-# Add Custom HTTP Header
-sed -i "/server_name _;/ a add_header X-Served-By $HOSTNAME;" /etc/nginx/sites-available/default
-
-# Restart Nginx
 sudo service nginx restart
