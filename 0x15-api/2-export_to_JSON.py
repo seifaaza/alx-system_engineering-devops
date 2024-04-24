@@ -23,11 +23,9 @@ if __name__ == '__main__':
         value_dict.update({'task': todo['title']})
         value_dict.update({'completed': todo['completed']})
         value_dict.update({'username': username})
-
         value_list.append(value_dict)
-        value_dict = {}
-    
-    task_dict.update({users['id']:value_list})
+        value_dict = {} 
+    task_dict.update({users['id']: value_list})
 
     with open("{}.json".format(user_id), "w") as file:
         json.dump(task_dict, file)
