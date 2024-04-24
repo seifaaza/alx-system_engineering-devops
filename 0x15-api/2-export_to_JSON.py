@@ -27,7 +27,7 @@ if __name__ == '__main__':
         value_list.append(value_dict)
         value_dict = {}
     
-    task_dict.update({users['id']: value_list})
+    task_dict.update({users['id']:value_list})
 
     with open("{}.json".format(user_id), "w") as file:
         json.dump(task_dict, file)
